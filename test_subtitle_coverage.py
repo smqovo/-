@@ -24,10 +24,14 @@ from datetime import datetime
 # =============================================================================
 
 # ------------------------------------------
-# Cookie 配置（从浏览器 F12 中复制完整 Cookie）
-# 获取方法：浏览器登录 bilibili.com -> F12 -> Network -> 任意请求 -> Cookie
+# SESSDATA 配置
+# 方式1：直接填入（替换下面的字符串）
+# 方式2：通过环境变量传入（推荐）：export BILI_SESSDATA="你的SESSDATA"
+# 获取方法：浏览器登录 bilibili.com -> F12 -> Application -> Cookies -> SESSDATA
 # ------------------------------------------
-COOKIE = "请替换为你的完整Cookie"
+RAW_SESSDATA = os.environ.get("BILI_SESSDATA", "请替换为你的SESSDATA")
+SESSDATA = urllib.parse.unquote(RAW_SESSDATA)
+COOKIE = f"SESSDATA={SESSDATA}"
 
 # ------------------------------------------
 # 数据文件与字段映射
