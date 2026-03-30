@@ -25,11 +25,9 @@ from datetime import datetime
 
 # ------------------------------------------
 # SESSDATA 配置
-# 方式1：直接填入（替换下面的字符串）
-# 方式2：通过环境变量传入（推荐）：export BILI_SESSDATA="你的SESSDATA"
 # 获取方法：浏览器登录 bilibili.com -> F12 -> Application -> Cookies -> SESSDATA
 # ------------------------------------------
-RAW_SESSDATA = os.environ.get("BILI_SESSDATA", "请替换为你的SESSDATA")
+RAW_SESSDATA = "e6389147%2C1790388792%2C11e4d%2A32CjCZR08f6XKM29SjayfBUbU5xmdFHybhZLEL7p3FnnfhyMSKRFua23eLtDy6vgNhhqISVnFfdzJIUktIVGVOSEJoa1k1U0hNdTM0eUxvZ0l6eDdXSE9IUWVNYTZncVNTT0QxakExbE5ERjZPbjlZQmt3T3pTd0gwZDVJLXFrOXRLcGJTWVN0RzlBIIEC"
 SESSDATA = urllib.parse.unquote(RAW_SESSDATA)
 COOKIE = f"SESSDATA={SESSDATA}"
 
@@ -139,8 +137,10 @@ def fetch_video_info(bvid: str, headers: dict) -> dict:
                 "aid": data["data"]["aid"],
                 "cid": data["data"]["cid"],
             }
-    except Exception:
-        pass
+        else:
+            print(f"    [API错误] code={data['code']}, msg={data.get('message','')}")
+    except Exception as exc:
+        print(f"    [请求异常] {exc}")
     return {}
 
 
@@ -215,6 +215,12 @@ def main():
     print("=" * 60)
     print("B站视频字幕爬取覆盖率测试")
     print("=" * 60)
+
+    # 打印 Cookie 前20字符，确认是否正确加载
+    print(f"Cookie 前30字符: {COOKIE[:30]}...")
+    if "请替换" in COOKIE:
+        print("[ERROR] SESSDATA 未配置！请编辑脚本开头的 RAW_SESSDATA")
+        return
 
     # ------------------------------------------
     # 第一步：读取数据并随机抽样
