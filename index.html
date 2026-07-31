@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一届 CAIE杯·全国大学生AI技能挑战赛</title>
+<meta name="description" content="CAIE人工智能研究院冠名主办，以赛促学·以赛促用·以赛促新，三大赛道等你挑战">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ========== Reset & Base ========== */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{background:var(--bg-primary);color:var(--text-primary);font-family:var(--font-body);line-height:1.75;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+ul,ol{list-style:none}
+img{max-width:100%;display:block}
+button,input,select,textarea{font-family:inherit;font-size:inherit;outline:none}
+
+:root{
+  --bg-primary:#0A1628;
+  --bg-secondary:#111D35;
+  --bg-tertiary:#162040;
+  --bg-elevated:#1A2744;
+  --color-blue:#2D7AFF;
+  --color-blue-light:#5B9AFF;
+  --color-blue-dark:#1A5FD9;
+  --color-cyan:#00F0FF;
+  --color-cyan-muted:rgba(0,240,255,0.15);
+  --color-purple:#8B5CF6;
+  --color-purple-muted:rgba(139,92,246,0.15);
+  --color-success:#10B981;
+  --color-warning:#F59E0B;
+  --color-error:#EF4444;
+  --text-primary:#F8FAFC;
+  --text-secondary:#94A3B8;
+  --text-tertiary:#64748B;
+  --text-disabled:#475569;
+  --border-default:#1E293B;
+  --border-hover:#2D7AFF;
+  --border-subtle:rgba(255,255,255,0.06);
+  --gradient-primary:linear-gradient(135deg,#2D7AFF 0%,#8B5CF6 50%,#00F0FF 100%);
+  --gradient-button:linear-gradient(90deg,#2D7AFF 0%,#5B9AFF 100%);
+  --gradient-text:linear-gradient(90deg,#2D7AFF,#00F0FF);
+  --gradient-glow-blue:radial-gradient(circle,rgba(45,122,255,0.25) 0%,transparent 70%);
+  --gradient-glow-cyan:radial-gradient(circle,rgba(0,240,255,0.15) 0%,transparent 70%);
+  --gradient-glow-purple:radial-gradient(circle,rgba(139,92,246,0.2) 0%,transparent 70%);
+  --gradient-border:linear-gradient(135deg,#2D7AFF,#00F0FF);
+  --font-display:'Outfit','PingFang SC','Noto Sans SC',sans-serif;
+  --font-body:'DM Sans','PingFang SC','Noto Sans SC',sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code',monospace;
+  --text-display:4.5rem;
+  --text-h1:3rem;
+  --text-h2:2.25rem;
+  --text-h3:1.5rem;
+  --text-body:1rem;
+  --text-body-sm:0.875rem;
+  --text-caption:0.75rem;
+  --text-data:3.5rem;
+  --radius-sm:8px;
+  --radius-md:12px;
+  --radius-lg:16px;
+  --radius-xl:24px;
+  --radius-full:9999px;
+  --shadow-card:0 4px 24px rgba(0,0,0,0.25);
+  --shadow-card-hover:0 8px 40px rgba(45,122,255,0.15);
+  --shadow-button:0 4px 16px rgba(45,122,255,0.3);
+  --shadow-glow-blue:0 0 40px rgba(45,122,255,0.3);
+  --shadow-glow-cyan:0 0 40px rgba(0,240,255,0.2);
+  --ease-out-expo:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.4,0,0.2,1);
+  --duration-fast:150ms;
+  --duration-normal:300ms;
+  --duration-slow:500ms;
+  --duration-enter:600ms;
+  --max-width:1280px;
+  --nav-height:72px;
+  --content-padding:24px;
+  --glass-bg:rgba(10,22,40,0.8);
+  --glass-blur:blur(20px);
+  --glass-border:1px solid rgba(255,255,255,0.06);
+  --z-nav:200;
+  --z-modal:300;
+  --space-section:7.5rem;
+}
+@media(max-width:768px){
+  :root{
+    --text-display:2.5rem;
+    --text-h1:2rem;
+    --text-h2:1.5rem;
+    --text-h3:1.25rem;
+    --text-data:2.25rem;
+    --space-section:5rem;
+    --nav-height:60px;
+    --content-padding:16px;
+  }
+}
+
+.container{max-width:var(--max-width);margin:0 auto;padding:0 var(--content-padding)}
+.text-gradient{background:var(--gradient-text);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--gradient-button);color:var(--text-primary);border:none;
+  border-radius:var(--radius-full);padding:14px 32px;font-weight:600;
+  cursor:pointer;box-shadow:var(--shadow-button);
+  transition:all var(--duration-normal) var(--ease-out-expo);
+  font-size:var(--text-body);gap:8px;
+}
+.btn-primary:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 6px 24px rgba(45,122,255,0.4)}
+.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;color:var(--text-primary);
+  border:1px solid var(--border-default);border-radius:var(--radius-full);
+  padding:14px 32px;font-weight:500;cursor:pointer;
+  transition:all var(--duration-normal) var(--ease-in-out);
+  font-size:var(--text-body);gap:8px;
+}
+.btn-ghost:hover{border-color:var(--color-blue);background:rgba(45,122,255,0.08)}
+
+.section-header{text-align:center;margin-bottom:4rem}
+.section-header h2{font-family:var(--font-display);font-size:var(--text-h1);font-weight:700;margin-bottom:1rem;line-height:1.2}
+.section-header p{color:var(--text-secondary);font-size:1.125rem;max-width:600px;margin:0 auto}
+
+/* ========== Nav ========== */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:var(--z-nav);
+  height:var(--nav-height);
+  transition:background var(--duration-normal),backdrop-filter var(--duration-normal);
+}
+.nav.scrolled{
+  background:var(--glass-bg);
+  backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur);
+  border-bottom:var(--glass-border);
+}
+.nav-inner{
+  max-width:var(--max-width);margin:0 auto;padding:0 var(--content-padding);
+  height:100%;display:flex;align-items:center;justify-content:space-between;
+}
+.nav-logo{font-family:var(--font-display);font-weight:700;font-size:1.25rem;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.nav-logo .logo-icon{
+  width:36px;height:36px;border-radius:var(--radius-sm);
+  background:var(--gradient-primary);display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:0.875rem;flex-shrink:0;
+}
+.nav-links{display:flex;align-items:center;gap:32px}
+.nav-links a{color:var(--text-secondary);font-size:var(--text-body-sm);font-weight:500;transition:color var(--duration-fast)}
+.nav-links a:hover{color:var(--text-primary)}
+.nav-cta{padding:10px 24px;font-size:var(--text-body-sm)}
+.nav-mobile-toggle{display:none;background:none;border:none;color:var(--text-primary);cursor:pointer;padding:8px}
+.nav-mobile-toggle svg{width:24px;height:24px}
+
+@media(max-width:900px){
+  .nav-links{
+    display:none;position:fixed;top:var(--nav-height);left:0;right:0;bottom:0;
+    background:var(--bg-primary);flex-direction:column;padding:2rem;gap:24px;
+    align-items:flex-start;
+  }
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1.125rem}
+  .nav-cta{display:none}
+  .nav-mobile-toggle{display:block}
+}
+
+/* ========== Hero ========== */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;padding:calc(var(--nav-height) + 2rem) var(--content-padding) 3rem;
+}
+.hero-canvas{position:absolute;inset:0;z-index:0}
+.hero-glow{position:absolute;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0}
+.hero-glow.g1{width:600px;height:600px;background:rgba(45,122,255,0.15);top:-10%;left:-10%;animation:floatGlow 15s ease-in-out infinite}
+.hero-glow.g2{width:500px;height:500px;background:rgba(139,92,246,0.12);bottom:-10%;right:-10%;animation:floatGlow 18s ease-in-out infinite reverse}
+.hero-glow.g3{width:400px;height:400px;background:rgba(0,240,255,0.08);top:40%;left:50%;animation:floatGlow 20s ease-in-out infinite 3s}
+@keyframes floatGlow{0%,100%{transform:translate(0,0)}25%{transform:translate(30px,-40px)}50%{transform:translate(-20px,30px)}75%{transform:translate(40px,20px)}}
+
+.hero-content{position:relative;z-index:1;text-align:center;max-width:900px}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--color-cyan-muted);border:1px solid rgba(0,240,255,0.2);
+  border-radius:var(--radius-full);padding:8px 20px;margin-bottom:2rem;
+  color:var(--color-cyan);font-size:var(--text-body-sm);font-weight:500;
+}
+.hero-title{font-family:var(--font-display);font-size:var(--text-display);font-weight:800;line-height:1.1;margin-bottom:1rem}
+.hero-subtitle{font-size:var(--text-h2);font-weight:600;margin-bottom:1.5rem;line-height:1.3}
+.hero-slogan{color:var(--text-secondary);font-size:1.125rem;margin-bottom:2.5rem;letter-spacing:0.15em}
+.hero-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem}
+
+.hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  background:var(--border-default);border-radius:var(--radius-lg);overflow:hidden;
+  max-width:720px;margin:0 auto;
+}
+.hero-stat{background:var(--bg-secondary);padding:1.5rem 1rem;text-align:center}
+.hero-stat .stat-value{font-family:var(--font-mono);font-size:var(--text-data);font-weight:700;line-height:1;margin-bottom:0.5rem}
+.hero-stat .stat-value.cyan{color:var(--color-cyan)}
+.hero-stat .stat-value.blue{color:var(--color-blue-light)}
+.hero-stat .stat-value.purple{color:var(--color-purple)}
+.hero-stat .stat-label{color:var(--text-secondary);font-size:var(--text-body-sm)}
+
+@media(max-width:600px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .hero-buttons .btn-primary,.hero-buttons .btn-ghost{width:100%}
+}
+
+/* ========== Highlights ========== */
+.highlights{padding:var(--space-section) 0;position:relative}
+.highlights-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.highlight-card{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:2rem;
+  transition:all var(--duration-normal) var(--ease-out-expo);
+  position:relative;overflow:hidden;
+}
+.highlight-card::before{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);padding:1px;
+  background:var(--gradient-border);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;
+  transition:opacity var(--duration-normal);pointer-events:none;
+}
+.highlight-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover)}
+.highlight-card:hover::before{opacity:1}
+.highlight-icon{
+  width:56px;height:56px;border-radius:var(--radius-md);margin-bottom:1.5rem;
+  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
+}
+.highlight-icon.blue{background:rgba(45,122,255,0.12);color:var(--color-blue)}
+.highlight-icon.cyan{background:var(--color-cyan-muted);color:var(--color-cyan)}
+.highlight-icon.purple{background:var(--color-purple-muted);color:var(--color-purple)}
+.highlight-icon.green{background:rgba(16,185,129,0.12);color:var(--color-success)}
+.highlight-card h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:600;margin-bottom:0.75rem}
+.highlight-card p{color:var(--text-secondary);font-size:var(--text-body-sm);line-height:1.7}
+
+@media(max-width:900px){.highlights-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.highlights-grid{grid-template-columns:1fr}}
+
+/* ========== Tracks ========== */
+.tracks{padding:var(--space-section) 0;position:relative}
+.tracks-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.track-card{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:2rem;position:relative;overflow:hidden;
+  transition:all var(--duration-normal) var(--ease-out-expo);
+  display:flex;flex-direction:column;
+}
+.track-card::before{
+  content:'';position:absolute;inset:0;border-radius:var(--radius-lg);padding:1px;
+  background:var(--gradient-border);
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;opacity:0;
+  transition:opacity var(--duration-normal);pointer-events:none;
+}
+.track-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover)}
+.track-card:hover::before{opacity:1}
+.track-level{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:var(--radius-full);padding:6px 14px;font-size:var(--text-caption);
+  font-weight:600;margin-bottom:1.5rem;width:fit-content;
+}
+.track-level.beginner{background:rgba(16,185,129,0.12);color:var(--color-success)}
+.track-level.intermediate{background:rgba(45,122,255,0.12);color:var(--color-blue-light)}
+.track-level.advanced{background:rgba(139,92,246,0.12);color:var(--color-purple)}
+.track-card h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:700;margin-bottom:0.5rem}
+.track-card .track-subtitle{color:var(--color-cyan);font-size:var(--text-body-sm);font-weight:500;margin-bottom:1.25rem}
+.track-card .track-desc{color:var(--text-secondary);font-size:var(--text-body-sm);margin-bottom:1.5rem;flex:1}
+.track-info{display:flex;flex-direction:column;gap:12px;margin-bottom:1.5rem}
+.track-info-item{display:flex;align-items:flex-start;gap:10px;font-size:var(--text-body-sm)}
+.track-info-item .info-label{color:var(--text-tertiary);min-width:70px;flex-shrink:0}
+.track-info-item .info-value{color:var(--text-secondary)}
+.track-tags{display:flex;flex-wrap:wrap;gap:8px}
+.track-tag{
+  background:var(--bg-tertiary);border:1px solid var(--border-default);
+  border-radius:var(--radius-full);padding:4px 12px;font-size:var(--text-caption);
+  color:var(--text-secondary);
+}
+.track-stars{display:flex;gap:2px;margin-left:auto}
+.track-stars .star{color:var(--color-warning);font-size:12px}
+.track-stars .star.empty{opacity:0.25}
+
+@media(max-width:900px){.tracks-grid{grid-template-columns:1fr}}
+
+/* ========== Timeline ========== */
+.timeline-section{padding:var(--space-section) 0;position:relative}
+.timeline{position:relative;max-width:800px;margin:0 auto}
+.timeline::before{
+  content:'';position:absolute;left:50%;top:0;bottom:0;width:2px;
+  background:linear-gradient(to bottom,transparent,var(--color-blue),var(--color-cyan),var(--color-purple),transparent);
+  transform:translateX(-50%);
+}
+.timeline-item{
+  position:relative;display:flex;align-items:flex-start;margin-bottom:3rem;
+}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-item:nth-child(odd){flex-direction:row-reverse;text-align:right}
+.timeline-item:nth-child(odd) .timeline-content{padding-left:0;padding-right:3rem}
+.timeline-item:nth-child(even) .timeline-content{padding-left:3rem}
+.timeline-dot{
+  position:absolute;left:50%;top:8px;width:16px;height:16px;
+  border-radius:50%;background:var(--gradient-primary);
+  transform:translateX(-50%);z-index:2;
+  box-shadow:0 0 20px rgba(45,122,255,0.4);
+  transition:transform var(--duration-normal);
+}
+.timeline-item:hover .timeline-dot{transform:translateX(-50%) scale(1.4)}
+.timeline-content{width:50%}
+.timeline-date{
+  display:inline-block;font-family:var(--font-mono);font-size:var(--text-caption);
+  color:var(--color-cyan);font-weight:500;margin-bottom:0.5rem;
+  background:var(--color-cyan-muted);padding:4px 12px;border-radius:var(--radius-full);
+}
+.timeline-content h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:600;margin-bottom:0.5rem}
+.timeline-content p{color:var(--text-secondary);font-size:var(--text-body-sm);line-height:1.7}
+
+@media(max-width:768px){
+  .timeline::before{left:20px}
+  .timeline-item,.timeline-item:nth-child(odd){flex-direction:row;text-align:left}
+  .timeline-item:nth-child(odd) .timeline-content{padding-right:0;padding-left:3rem}
+  .timeline-item:nth-child(even) .timeline-content{padding-left:3rem}
+  .timeline-dot{left:20px}
+  .timeline-content{width:100%}
+}
+
+/* ========== Awards ========== */
+.awards{padding:var(--space-section) 0;position:relative}
+.awards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:4rem}
+.award-card{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:2.5rem 2rem;text-align:center;
+  position:relative;overflow:hidden;
+  transition:all var(--duration-normal) var(--ease-out-expo);
+}
+.award-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-card-hover)}
+.award-card.gold{border-color:rgba(245,158,11,0.3)}
+.award-card.silver{border-color:rgba(148,163,184,0.3)}
+.award-card.bronze{border-color:rgba(180,120,80,0.3)}
+.award-medal{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 1.5rem;
+  display:flex;align-items:center;justify-content:center;font-size:2.5rem;
+}
+.award-card.gold .award-medal{background:linear-gradient(135deg,rgba(245,158,11,0.2),rgba(245,158,11,0.05));box-shadow:0 0 40px rgba(245,158,11,0.15)}
+.award-card.silver .award-medal{background:linear-gradient(135deg,rgba(148,163,184,0.2),rgba(148,163,184,0.05));box-shadow:0 0 40px rgba(148,163,184,0.1)}
+.award-card.bronze .award-medal{background:linear-gradient(135deg,rgba(180,120,80,0.2),rgba(180,120,80,0.05));box-shadow:0 0 40px rgba(180,120,80,0.1)}
+.award-card h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:700;margin-bottom:0.5rem}
+.award-amount{font-family:var(--font-mono);font-size:var(--text-h2);font-weight:700;margin-bottom:0.25rem}
+.award-card.gold .award-amount{color:var(--color-warning)}
+.award-card.silver .award-amount{color:var(--text-secondary)}
+.award-card.bronze .award-amount{color:#B47850}
+.award-quota{color:var(--text-tertiary);font-size:var(--text-body-sm);margin-bottom:1.5rem}
+.award-perks{text-align:left;display:flex;flex-direction:column;gap:10px}
+.award-perk{display:flex;align-items:flex-start;gap:8px;font-size:var(--text-body-sm);color:var(--text-secondary)}
+.award-perk svg{flex-shrink:0;margin-top:3px;color:var(--color-success)}
+
+.judge-system{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:2.5rem;max-width:600px;margin:0 auto;
+}
+.judge-system h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:600;text-align:center;margin-bottom:2rem}
+.judge-bar{margin-bottom:1.5rem}
+.judge-bar-header{display:flex;justify-content:space-between;margin-bottom:8px;font-size:var(--text-body-sm)}
+.judge-bar-label{color:var(--text-secondary)}
+.judge-bar-value{font-family:var(--font-mono);font-weight:700;color:var(--color-cyan)}
+.judge-bar-track{height:12px;background:var(--bg-tertiary);border-radius:var(--radius-full);overflow:hidden}
+.judge-bar-fill{height:100%;border-radius:var(--radius-full);transition:width 1s var(--ease-out-expo)}
+.judge-bar-fill.blue{background:var(--gradient-button)}
+.judge-bar-fill.purple{background:linear-gradient(90deg,var(--color-purple),#A78BFA)}
+
+@media(max-width:768px){.awards-grid{grid-template-columns:1fr}}
+
+/* ========== Form ========== */
+.form-section{padding:var(--space-section) 0;position:relative}
+.form-wrapper{
+  max-width:640px;margin:0 auto;
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:3rem;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.form-group{display:flex;flex-direction:column;gap:8px}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-size:var(--text-body-sm);font-weight:500;color:var(--text-secondary)}
+.form-group label .required{color:var(--color-error);margin-left:2px}
+.form-input,.form-select{
+  background:var(--bg-tertiary);border:1px solid var(--border-default);
+  border-radius:var(--radius-md);padding:12px 16px;color:var(--text-primary);
+  font-size:var(--text-body);transition:border-color var(--duration-fast);
+  width:100%;
+}
+.form-input::placeholder{color:var(--text-disabled)}
+.form-input:focus,.form-select:focus{border-color:var(--color-blue)}
+.form-input.error{border-color:var(--color-error)}
+.form-error{color:var(--color-error);font-size:var(--text-caption);display:none}
+.form-error.show{display:block}
+.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2394A3B8' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:36px}
+.form-select option{background:var(--bg-tertiary);color:var(--text-primary)}
+.form-submit{margin-top:12px;width:100%;padding:16px}
+
+@media(max-width:600px){
+  .form-grid{grid-template-columns:1fr}
+  .form-wrapper{padding:2rem 1.5rem}
+}
+
+/* ========== FAQ ========== */
+.faq{padding:var(--space-section) 0;position:relative}
+.faq-list{max-width:800px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.faq-item{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);overflow:hidden;
+  transition:border-color var(--duration-normal);
+}
+.faq-item.active{border-color:rgba(45,122,255,0.3)}
+.faq-question{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem;cursor:pointer;gap:16px;
+  font-weight:500;font-size:var(--text-body);
+  transition:color var(--duration-fast);
+}
+.faq-question:hover{color:var(--color-blue-light)}
+.faq-icon{
+  width:24px;height:24px;flex-shrink:0;
+  transition:transform var(--duration-normal) var(--ease-out-expo);
+  color:var(--text-tertiary);
+}
+.faq-item.active .faq-icon{transform:rotate(45deg);color:var(--color-blue)}
+.faq-answer{
+  max-height:0;overflow:hidden;
+  transition:max-height var(--duration-slow) var(--ease-out-expo),padding var(--duration-slow);
+}
+.faq-answer-inner{padding:0 1.5rem 1.25rem;color:var(--text-secondary);font-size:var(--text-body-sm);line-height:1.8}
+
+/* ========== Footer ========== */
+.footer{
+  border-top:1px solid var(--border-default);
+  padding:4rem 0 2rem;margin-top:var(--space-section);
+}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand h4{font-family:var(--font-display);font-size:var(--text-h3);font-weight:700;margin-bottom:1rem}
+.footer-brand p{color:var(--text-secondary);font-size:var(--text-body-sm);line-height:1.8;max-width:360px}
+.footer-col h5{font-weight:600;margin-bottom:1rem;font-size:var(--text-body)}
+.footer-col ul{display:flex;flex-direction:column;gap:10px}
+.footer-col a{color:var(--text-secondary);font-size:var(--text-body-sm);transition:color var(--duration-fast)}
+.footer-col a:hover{color:var(--color-blue-light)}
+.footer-bottom{
+  border-top:1px solid var(--border-default);padding-top:2rem;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;
+  color:var(--text-tertiary);font-size:var(--text-caption);
+}
+
+@media(max-width:768px){
+  .footer-grid{grid-template-columns:1fr;gap:2rem}
+}
+
+/* ========== Modal ========== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);
+  z-index:var(--z-modal);display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;transition:all var(--duration-normal);
+  padding:var(--content-padding);
+}
+.modal-overlay.show{opacity:1;visibility:visible}
+.modal{
+  background:var(--bg-secondary);border:1px solid var(--border-default);
+  border-radius:var(--radius-lg);padding:3rem;text-align:center;
+  max-width:420px;width:100%;
+  transform:translateY(20px) scale(0.95);
+  transition:transform var(--duration-normal) var(--ease-out-expo);
+}
+.modal-overlay.show .modal{transform:translateY(0) scale(1)}
+.modal-icon{
+  width:72px;height:72px;border-radius:50%;margin:0 auto 1.5rem;
+  background:rgba(16,185,129,0.12);display:flex;align-items:center;justify-content:center;
+}
+.modal h3{font-family:var(--font-display);font-size:var(--text-h3);font-weight:700;margin-bottom:0.75rem}
+.modal p{color:var(--text-secondary);font-size:var(--text-body-sm);margin-bottom:2rem;line-height:1.7}
+.modal .btn-primary{width:100%}
+
+/* ========== Animations ========== */
+.fade-up{opacity:0;transform:translateY(30px);transition:opacity 0.6s var(--ease-out-expo),transform 0.6s var(--ease-out-expo)}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-up-delay-1{transition-delay:0.1s}
+.fade-up-delay-2{transition-delay:0.2s}
+.fade-up-delay-3{transition-delay:0.3s}
+.fade-up-delay-4{transition-delay:0.4s}
+
+/* ========== Section Glow Dividers ========== */
+.section-glow{
+  position:absolute;width:600px;height:600px;border-radius:50%;
+  filter:blur(150px);pointer-events:none;z-index:-1;
+}
+
+/* ========== Scrollbar ========== */
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--bg-primary)}
+::-webkit-scrollbar-thumb{background:var(--bg-elevated);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text-disabled)}
+</style>
+</head>
+<body>
+
+<!-- ===== Navigation ===== -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="logo-icon">AI</div>
+      <span>CAIE杯</span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">大赛简介</a>
+      <a href="#tracks">赛道设置</a>
+      <a href="#timeline">赛程安排</a>
+      <a href="#awards">奖项设置</a>
+      <a href="#faq">常见问题</a>
+      <a href="#register" class="btn-primary nav-cta">立即报名</a>
+    </div>
+    <button class="nav-mobile-toggle" id="navToggle" aria-label="菜单">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== Hero ===== -->
+<section class="hero" id="hero">
+  <canvas class="hero-canvas" id="heroCanvas"></canvas>
+  <div class="hero-glow g1"></div>
+  <div class="hero-glow g2"></div>
+  <div class="hero-glow g3"></div>
+  <div class="hero-content">
+    <div class="hero-badge fade-up">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      CAIE人工智能研究院 冠名主办
+    </div>
+    <h1 class="hero-title fade-up fade-up-delay-1">
+      <span class="text-gradient">第一届 CAIE杯</span>
+    </h1>
+    <p class="hero-subtitle fade-up fade-up-delay-2">全国大学生AI技能挑战赛</p>
+    <p class="hero-slogan fade-up fade-up-delay-3">以赛促学 · 以赛促用 · 以赛促新</p>
+    <div class="hero-buttons fade-up fade-up-delay-3">
+      <a href="#register" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13 12H3"/></svg>
+        立即报名
+      </a>
+      <a href="#about" class="btn-ghost">
+        了解详情
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </a>
+    </div>
+    <div class="hero-stats fade-up fade-up-delay-4">
+      <div class="hero-stat">
+        <div class="stat-value cyan">¥3万</div>
+        <div class="stat-label">一等奖奖金/赛道</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-value blue">9个月</div>
+        <div class="stat-label">赛事周期</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-value purple">3大</div>
+        <div class="stat-label">竞赛赛道</div>
+      </div>
+      <div class="hero-stat">
+        <div class="stat-value cyan">CAIE</div>
+        <div class="stat-label">权威认证</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Highlights ===== -->
+<section class="highlights" id="about">
+  <div class="section-glow" style="background:var(--gradient-glow-blue);top:-200px;right:-200px"></div>
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2>为什么要<span class="text-gradient">参加比赛</span></h2>
+      <p>四大核心参赛价值，让你的AI能力被看见、被认可</p>
+    </div>
+    <div class="highlights-grid">
+      <div class="highlight-card fade-up">
+        <div class="highlight-icon blue">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15l-2 5l9-11h-5l2-5l-9 11h5z"/></svg>
+        </div>
+        <h3>能力认证</h3>
+        <p>赛事内容对标 CAIE Level I/II 认证体系，"备赛即备考"。获奖选手可获得 CAIE 官方颁发的 AI 能力认定证书，为简历增添权威背书。</p>
+      </div>
+      <div class="highlight-card fade-up fade-up-delay-1">
+        <div class="highlight-icon cyan">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a4 4 0 00-8 0v2"/><circle cx="12" cy="14" r="2"/></svg>
+        </div>
+        <h3>求职加分</h3>
+        <p>所有参赛者获得"AI 能力雷达图"，按 CAIE 四大模块维度可视化展示你的能力水平，可直接嵌入简历或分享至朋友圈。</p>
+      </div>
+      <div class="highlight-card fade-up fade-up-delay-2">
+        <div class="highlight-icon purple">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        </div>
+        <h3>实战提升</h3>
+        <p>从 Prompt 设计到产品原型再到工程实战，三个赛道覆盖完整 AI 应用能力链路。复赛阶段可获得导师一对一点评指导。</p>
+      </div>
+      <div class="highlight-card fade-up fade-up-delay-3">
+        <div class="highlight-icon green">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        </div>
+        <h3>社群人脉</h3>
+        <p>加入 CAIE 官方社群，与全国 AI 爱好者交流切磋。优秀选手将获得 CAIE 研究院实习/项目合作的优先推荐机会。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Tracks ===== -->
+<section class="tracks" id="tracks">
+  <div class="section-glow" style="background:var(--gradient-glow-purple);bottom:-200px;left:-200px"></div>
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2>三大<span class="text-gradient">竞赛赛道</span></h2>
+      <p>从零基础到技术大牛，总有一个赛道适合你</p>
+    </div>
+    <div class="tracks-grid">
+      <!-- Track A -->
+      <div class="track-card fade-up">
+        <div class="track-level beginner">
+          <span>入门级</span>
+          <span class="track-stars">
+            <span class="star">★</span><span class="star">★</span>
+            <span class="star empty">★</span><span class="star empty">★</span><span class="star empty">★</span>
+          </span>
+        </div>
+        <h3>赛道A · AI玩家</h3>
+        <div class="track-subtitle">AI 应用能力挑战赛</div>
+        <p class="track-desc">面向所有对 AI 感兴趣的在校大学生，无需编程基础。用 AI 工具解决一个真实问题，展示你的创意和应用能力。</p>
+        <div class="track-info">
+          <div class="track-info-item">
+            <span class="info-label">面向人群</span>
+            <span class="info-value">所有专业本/专科在校生，个人参赛</span>
+          </div>
+          <div class="track-info-item">
+            <span class="info-label">考察能力</span>
+            <span class="info-value">AI 工具使用、Prompt 设计、场景洞察力</span>
+          </div>
+        </div>
+        <div class="track-tags">
+          <span class="track-tag">Prompt设计</span>
+          <span class="track-tag">AI工具应用</span>
+          <span class="track-tag">零编程门槛</span>
+          <span class="track-tag">个人赛</span>
+        </div>
+      </div>
+      <!-- Track B -->
+      <div class="track-card fade-up fade-up-delay-1">
+        <div class="track-level intermediate">
+          <span>进阶级</span>
+          <span class="track-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+            <span class="star empty">★</span>
+          </span>
+        </div>
+        <h3>赛道B · AI造物</h3>
+        <div class="track-subtitle">AI 产品原型挑战赛</div>
+        <p class="track-desc">面向有一定 AI 基础的在校生，可 1-3 人组队。围绕命题方向设计并实现一个可演示的 AI 产品原型（MVP）。</p>
+        <div class="track-info">
+          <div class="track-info-item">
+            <span class="info-label">面向人群</span>
+            <span class="info-value">计算机/数据科学等相关专业，1-3人组队</span>
+          </div>
+          <div class="track-info-item">
+            <span class="info-label">考察能力</span>
+            <span class="info-value">AI 产品设计、工作流搭建、API 调用</span>
+          </div>
+        </div>
+        <div class="track-tags">
+          <span class="track-tag">产品设计</span>
+          <span class="track-tag">RAG/Agent</span>
+          <span class="track-tag">API调用</span>
+          <span class="track-tag">团队协作</span>
+        </div>
+      </div>
+      <!-- Track C -->
+      <div class="track-card fade-up fade-up-delay-2">
+        <div class="track-level advanced">
+          <span>专业级</span>
+          <span class="track-stars">
+            <span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span>
+          </span>
+        </div>
+        <h3>赛道C · AI引擎</h3>
+        <div class="track-subtitle">AI 工程实战精英赛</div>
+        <p class="track-desc">面向本科高年级及研究生，可 1-3 人组队。门槛最高，含金量也最高，完成从数据处理到模型部署的完整 AI 工程链路。</p>
+        <div class="track-info">
+          <div class="track-info-item">
+            <span class="info-label">面向人群</span>
+            <span class="info-value">AI/CS等专业高年级或研究生，1-3人组队</span>
+          </div>
+          <div class="track-info-item">
+            <span class="info-label">考察能力</span>
+            <span class="info-value">深度学习、LLM 工程、系统架构设计</span>
+          </div>
+        </div>
+        <div class="track-tags">
+          <span class="track-tag">深度学习</span>
+          <span class="track-tag">模型微调</span>
+          <span class="track-tag">系统架构</span>
+          <span class="track-tag">工程部署</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Timeline ===== -->
+<section class="timeline-section" id="timeline">
+  <div class="section-glow" style="background:var(--gradient-glow-cyan);top:20%;right:-300px"></div>
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2><span class="text-gradient">赛程安排</span></h2>
+      <p>总赛程 9 个月，充分考虑大学生学期节奏</p>
+    </div>
+    <div class="timeline">
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.04.01 — 06.05</span>
+          <h3>宣传报名期</h3>
+          <p>官网上线、高校合作推进、校园大使招募、备赛指南发布、AI 入门公开课引流。目标报名 ≥ 5,000 人。</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.06.06 — 06.15</span>
+          <h3>初赛阶段</h3>
+          <p>三赛道同步在线答题，10 天窗口期自选时间开考。即时出分，6 月 20 日公布晋级名单。</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.06.21 — 09.15</span>
+          <h3>复赛创作期</h3>
+          <p>提交 AI 应用案例/产品原型/工程项目。设两个里程碑检查点（7.20 选题登记、8.20 中期进展），导师全程指导。</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.09.16 — 10.20</span>
+          <h3>评审投票期</h3>
+          <p>专家评审（每份作品至少 2 位评委独立打分）+ 公众投票（10.01-10.15），综合计分公布决赛入围名单。</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.11.08 — 11.09</span>
+          <h3>决赛路演</h3>
+          <p>线上路演答辩，微信视频号全程直播。三赛道 35 组选手依次展示，评委现场打分。</p>
+        </div>
+      </div>
+      <div class="timeline-item fade-up">
+        <div class="timeline-dot"></div>
+        <div class="timeline-content">
+          <span class="timeline-date">2026.11 — 12</span>
+          <h3>颁奖收尾</h3>
+          <p>线上颁奖典礼，颁发荣誉证书 + CAIE 认证权益。获奖作品编辑为优秀案例集发布，全员发放参赛证明。</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Awards ===== -->
+<section class="awards" id="awards">
+  <div class="section-glow" style="background:var(--gradient-glow-purple);bottom:-100px;left:-200px"></div>
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2><span class="text-gradient">奖项设置</span></h2>
+      <p>三赛道独立评选，总奖金池超 22 万元</p>
+    </div>
+    <div class="awards-grid">
+      <!-- Gold -->
+      <div class="award-card gold fade-up">
+        <div class="award-medal">🥇</div>
+        <h3>一等奖</h3>
+        <div class="award-amount">¥30,000</div>
+        <div class="award-quota">每赛道 1 名/组</div>
+        <div class="award-perks">
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>荣誉证书（纸质+电子）+ CAIE 官方 AI 卓越能力认定证书</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>免费获赠 CAIE Level I + Level II 考试资格（价值 ¥1,000）</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>CAIE 研究院实习/项目合作优先推荐</span>
+          </div>
+        </div>
+      </div>
+      <!-- Silver -->
+      <div class="award-card silver fade-up fade-up-delay-1">
+        <div class="award-medal">🥈</div>
+        <h3>二等奖</h3>
+        <div class="award-amount">¥8,000</div>
+        <div class="award-quota">每赛道 3 名/组</div>
+        <div class="award-perks">
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>荣誉证书（纸质+电子）</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>免费获赠 CAIE Level I 考试资格 + Level II 半价优惠（价值 ¥600）</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>CAIE 研究院暑期训练营优先录取</span>
+          </div>
+        </div>
+      </div>
+      <!-- Bronze -->
+      <div class="award-card bronze fade-up fade-up-delay-2">
+        <div class="award-medal">🥉</div>
+        <h3>三等奖</h3>
+        <div class="award-amount">¥3,000</div>
+        <div class="award-quota">每赛道 5 名/组</div>
+        <div class="award-perks">
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>荣誉证书（纸质+电子）</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>免费获赠 CAIE Level I 考试资格（价值 ¥200）</span>
+          </div>
+          <div class="award-perk">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>CAIE 官方学习资料包（教材+如荷学题库 VIP）</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Judge System -->
+    <div class="judge-system fade-up">
+      <h3>复赛评判体系</h3>
+      <div class="judge-bar">
+        <div class="judge-bar-header">
+          <span class="judge-bar-label">专家评分（2位评委独立打分取均值）</span>
+          <span class="judge-bar-value">80%</span>
+        </div>
+        <div class="judge-bar-track">
+          <div class="judge-bar-fill blue" style="width:0%" data-target="80"></div>
+        </div>
+      </div>
+      <div class="judge-bar">
+        <div class="judge-bar-header">
+          <span class="judge-bar-label">公众投票（排名映射制，防刷票机制保障）</span>
+          <span class="judge-bar-value">20%</span>
+        </div>
+        <div class="judge-bar-track">
+          <div class="judge-bar-fill purple" style="width:0%" data-target="20"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Registration ===== -->
+<section class="form-section" id="register">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2><span class="text-gradient">立即报名</span></h2>
+      <p>填写信息完成报名，开启你的 AI 挑战之旅</p>
+    </div>
+    <div class="form-wrapper fade-up">
+      <form id="registerForm" novalidate>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>姓名<span class="required">*</span></label>
+            <input type="text" class="form-input" name="name" placeholder="请输入真实姓名" required>
+            <span class="form-error">请输入姓名</span>
+          </div>
+          <div class="form-group">
+            <label>手机号<span class="required">*</span></label>
+            <input type="tel" class="form-input" name="phone" placeholder="请输入手机号" required>
+            <span class="form-error">请输入有效的手机号</span>
+          </div>
+          <div class="form-group">
+            <label>学校<span class="required">*</span></label>
+            <input type="text" class="form-input" name="school" placeholder="请输入学校全称" required>
+            <span class="form-error">请输入学校名称</span>
+          </div>
+          <div class="form-group">
+            <label>学历<span class="required">*</span></label>
+            <select class="form-select" name="degree" required>
+              <option value="">请选择学历</option>
+              <option value="专科">专科</option>
+              <option value="本科">本科</option>
+              <option value="硕士">硕士</option>
+              <option value="博士">博士</option>
+            </select>
+            <span class="form-error">请选择学历</span>
+          </div>
+          <div class="form-group">
+            <label>专业<span class="required">*</span></label>
+            <input type="text" class="form-input" name="major" placeholder="请输入专业名称" required>
+            <span class="form-error">请输入专业</span>
+          </div>
+          <div class="form-group">
+            <label>赛道选择<span class="required">*</span></label>
+            <select class="form-select" name="track" required>
+              <option value="">请选择赛道</option>
+              <option value="A">赛道A · AI玩家（入门级）</option>
+              <option value="B">赛道B · AI造物（进阶级）</option>
+              <option value="C">赛道C · AI引擎（专业级）</option>
+            </select>
+            <span class="form-error">请选择赛道</span>
+          </div>
+          <div class="form-group full">
+            <label>邮箱<span class="required">*</span></label>
+            <input type="email" class="form-input" name="email" placeholder="请输入常用邮箱，用于接收赛事通知" required>
+            <span class="form-error">请输入有效的邮箱地址</span>
+          </div>
+          <div class="form-group full">
+            <button type="submit" class="btn-primary form-submit">提交报名</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq">
+  <div class="container">
+    <div class="section-header fade-up">
+      <h2><span class="text-gradient">常见问题</span></h2>
+      <p>关于赛事你可能想了解的</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>报名参赛需要付费吗？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">不需要，本赛事全程免费参赛。报名、初赛答题、复赛提交、投票、决赛路演均不收取任何费用。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>我没有编程基础，可以参加吗？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">完全可以！赛道A（AI玩家）专为零编程基础的同学设计，考察的是你使用 AI 工具的能力和创意，比如 ChatGPT、Midjourney、Notion AI 等工具的应用。只要会用 AI 工具解决问题，就能参赛。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>可以同时报名多个赛道吗？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">每位选手只能选择一个赛道报名参赛。建议根据自身 AI 技能水平选择最匹配的赛道：零基础选赛道A，有基础选赛道B，技术强选赛道C。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>初赛的考试内容和 CAIE 认证有什么关系？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">初赛题库由 CAIE 人工智能研究院提供，内容覆盖 CAIE Level I 考纲四大模块（AI 认知基础、Prompt 进阶技术、RAG/Agent 常识、AI 行业应用场景），赛题与 CAIE 正式考试题库重叠率不低于 30%。简单来说，备赛就是在备考 CAIE 认证。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>复赛的评判标准是什么？投票占多少？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">复赛综合得分 = 专家评分 × 80% + 公众投票 × 20%。每份作品由至少 2 位评委独立打分，分差超过 15 分会自动分配第三位评委。投票采用排名映射制而非绝对票数制，配合五层防刷票机制，确保公平公正。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>赛道B和C可以组队吗？对队员有什么要求？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">赛道B和赛道C支持 1-3 人组队参赛，须指定一名队长。队员需为在校大学生（含专科、本科、硕士、博士），可跨校组队。初赛阶段每名队员独立答题，取团队平均分。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>所有参赛者都能获得什么？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">所有完成初赛答题的选手均可获得：电子参赛证明（含姓名、赛道、初赛成绩）、AI 能力雷达图（按 CAIE 四大模块维度展示）、CAIE Level I 考试专属优惠码（立减 50 元）、以及 CAIE Level I 电子备考资料包。</div></div>
+      </div>
+      <div class="faq-item fade-up">
+        <div class="faq-question">
+          <span>决赛是线上还是线下？</span>
+          <svg class="faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </div>
+        <div class="faq-answer"><div class="faq-answer-inner">决赛采用线上路演答辩形式，通过腾讯会议/微信视频号直播进行，无需到现场。赛道A选手 5 分钟演示 + 3 分钟评委提问；赛道B为 8 分钟产品演示 + 5 分钟提问；赛道C为 10 分钟技术演示 + 8 分钟评委深度技术质询。</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <h4>CAIE杯·全国大学生AI技能挑战赛</h4>
+        <p>由 CAIE 人工智能研究院冠名主办，中国人工智能产教融合研究院副秘书长单位联合主办。以赛促学、以赛促用、以赛促新，致力于为大学生提供权威、公平、实战导向的 AI 能力展示平台。</p>
+      </div>
+      <div class="footer-col">
+        <h5>赛事信息</h5>
+        <ul>
+          <li><a href="#about">大赛简介</a></li>
+          <li><a href="#tracks">赛道设置</a></li>
+          <li><a href="#timeline">赛程安排</a></li>
+          <li><a href="#awards">奖项设置</a></li>
+          <li><a href="#register">立即报名</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>联系我们</h5>
+        <ul>
+          <li><a href="#faq">常见问题</a></li>
+          <li><a>邮箱：contact@caie.org</a></li>
+          <li><a>公众号：CAIE人工智能研究院</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 CAIE人工智能研究院 版权所有</span>
+      <span>第一届 CAIE杯·全国大学生AI技能挑战赛</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ===== Success Modal ===== -->
+<div class="modal-overlay" id="successModal">
+  <div class="modal">
+    <div class="modal-icon">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <h3>报名成功！</h3>
+    <p>恭喜你成功报名第一届 CAIE杯·全国大学生AI技能挑战赛！我们将通过邮件发送赛事通知和备赛资料，请保持关注。</p>
+    <button class="btn-primary" onclick="closeModal()">知道了</button>
+  </div>
+</div>
+
+<script>
+/* ========== Navbar scroll effect ========== */
+(function(){
+  var nav = document.getElementById('nav');
+  var toggle = document.getElementById('navToggle');
+  var links = document.getElementById('navLinks');
+  window.addEventListener('scroll', function(){
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+  toggle.addEventListener('click', function(){
+    links.classList.toggle('open');
+  });
+  links.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ links.classList.remove('open'); });
+  });
+})();
+
+/* ========== Particle Canvas ========== */
+(function(){
+  var canvas = document.getElementById('heroCanvas');
+  var ctx = canvas.getContext('2d');
+  var particles = [];
+  var mouse = {x:null, y:null};
+  var PARTICLE_COUNT = 80;
+  var MAX_DIST = 120;
+
+  function resize(){
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  canvas.addEventListener('mousemove', function(e){
+    var r = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - r.left;
+    mouse.y = e.clientY - r.top;
+  });
+  canvas.addEventListener('mouseleave', function(){ mouse.x = null; });
+
+  function Particle(){
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.vx = (Math.random() - 0.5) * 0.4;
+    this.vy = (Math.random() - 0.5) * 0.4;
+    this.r = Math.random() * 1.5 + 0.5;
+  }
+
+  for(var i=0;i<PARTICLE_COUNT;i++) particles.push(new Particle());
+
+  var lastTime = 0;
+  var interval = 1000/30;
+
+  function draw(ts){
+    requestAnimationFrame(draw);
+    if(ts - lastTime < interval) return;
+    lastTime = ts;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>canvas.width) p.vx *= -1;
+      if(p.y<0||p.y>canvas.height) p.vy *= -1;
+
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle='rgba(45,122,255,0.5)';
+      ctx.fill();
+
+      for(var j=i+1;j<particles.length;j++){
+        var q = particles[j];
+        var dx=p.x-q.x, dy=p.y-q.y;
+        var dist=Math.sqrt(dx*dx+dy*dy);
+        if(dist<MAX_DIST){
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y);
+          ctx.lineTo(q.x,q.y);
+          ctx.strokeStyle='rgba(45,122,255,'+(1-dist/MAX_DIST)*0.15+')';
+          ctx.lineWidth=0.5;
+          ctx.stroke();
+        }
+      }
+
+      if(mouse.x !== null){
+        var dx2=p.x-mouse.x, dy2=p.y-mouse.y;
+        var dist2=Math.sqrt(dx2*dx2+dy2*dy2);
+        if(dist2<180){
+          ctx.beginPath();
+          ctx.moveTo(p.x,p.y);
+          ctx.lineTo(mouse.x,mouse.y);
+          ctx.strokeStyle='rgba(0,240,255,'+(1-dist2/180)*0.25+')';
+          ctx.lineWidth=0.6;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ========== Scroll reveal ========== */
+(function(){
+  var els = document.querySelectorAll('.fade-up');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  },{threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(el){ observer.observe(el); });
+})();
+
+/* ========== Judge bar animation ========== */
+(function(){
+  var bars = document.querySelectorAll('.judge-bar-fill');
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.style.width = e.target.dataset.target + '%';
+        observer.unobserve(e.target);
+      }
+    });
+  },{threshold:0.5});
+  bars.forEach(function(b){ observer.observe(b); });
+})();
+
+/* ========== FAQ accordion ========== */
+(function(){
+  document.querySelectorAll('.faq-question').forEach(function(q){
+    q.addEventListener('click', function(){
+      var item = q.parentElement;
+      var answer = item.querySelector('.faq-answer');
+      var isActive = item.classList.contains('active');
+
+      document.querySelectorAll('.faq-item.active').forEach(function(a){
+        a.classList.remove('active');
+        a.querySelector('.faq-answer').style.maxHeight = '0';
+      });
+
+      if(!isActive){
+        item.classList.add('active');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+})();
+
+/* ========== Form validation & submit ========== */
+(function(){
+  var form = document.getElementById('registerForm');
+
+  function validate(input){
+    var name = input.name;
+    var val = input.value.trim();
+    var err = input.parentElement.querySelector('.form-error');
+    var valid = true;
+
+    if(!val){ valid = false; }
+    else if(name === 'phone' && !/^1[3-9]\d{9}$/.test(val)){ valid = false; }
+    else if(name === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)){ valid = false; }
+
+    input.classList.toggle('error', !valid);
+    if(err) err.classList.toggle('show', !valid);
+    return valid;
+  }
+
+  form.querySelectorAll('.form-input, .form-select').forEach(function(input){
+    input.addEventListener('blur', function(){ validate(input); });
+    input.addEventListener('input', function(){
+      if(input.classList.contains('error')) validate(input);
+    });
+  });
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var inputs = form.querySelectorAll('.form-input, .form-select');
+    var allValid = true;
+    inputs.forEach(function(input){
+      if(!validate(input)) allValid = false;
+    });
+    if(allValid){
+      document.getElementById('successModal').classList.add('show');
+      form.reset();
+      inputs.forEach(function(input){
+        input.classList.remove('error');
+        var err = input.parentElement.querySelector('.form-error');
+        if(err) err.classList.remove('show');
+      });
+    }
+  });
+})();
+
+function closeModal(){
+  document.getElementById('successModal').classList.remove('show');
+}
+document.getElementById('successModal').addEventListener('click', function(e){
+  if(e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
