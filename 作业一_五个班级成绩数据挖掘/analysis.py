@@ -13,24 +13,21 @@ warnings.filterwarnings("ignore")
 SRC, OUT = sys.argv[1], sys.argv[2]
 FIG = f"{OUT}/fig"
 
-# ---------- 绘图风格 ----------
-font_manager.fontManager.addfont("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc")
+# ---------- 绘图风格（matplotlib 默认配色 + 学术排版） ----------
+for f in ["/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf",
+          "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf",
+          "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc"]:
+    font_manager.fontManager.addfont(f)
 plt.rcParams.update({
-    "font.family": "WenQuanYi Zen Hei", "axes.unicode_minus": False,
-    "font.size": 10, "axes.titlesize": 12, "axes.titleweight": "bold",
-    "axes.edgecolor": "#b8b7b2", "axes.labelcolor": "#52514e",
-    "xtick.color": "#52514e", "ytick.color": "#52514e",
-    "axes.spines.top": False, "axes.spines.right": False,
-    "axes.grid": True, "grid.color": "#e6e5e0", "grid.linewidth": 0.6,
-    "axes.axisbelow": True, "figure.facecolor": "white", "savefig.dpi": 200,
-    "legend.frameon": False,
+    "font.family": ["Liberation Serif", "Noto Serif CJK SC"],   # 西文 Times 类字体，中文宋体
+    "mathtext.fontset": "stix", "axes.unicode_minus": False,
+    "font.size": 10.5, "axes.labelsize": 10.5, "xtick.labelsize": 10, "ytick.labelsize": 10,
+    "legend.fontsize": 9.5, "xtick.direction": "in", "ytick.direction": "in",
+    "axes.linewidth": 0.8, "savefig.dpi": 300, "figure.dpi": 100,
 })
-INK, INK2, MUTED = "#0b0b0b", "#52514e", "#8a8984"
 CLASSES = ["D1", "D2", "BD", "T1", "T2"]
-CCOL = dict(zip(CLASSES, ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4"]))
+CCOL = dict(zip(CLASSES, plt.rcParams["axes.prop_cycle"].by_key()["color"][:5]))
 LEVELS = ["及格(60–70)", "中等(70–80)", "良好(80–85)", "优秀(≥85)"]
-LCOL = ["#86b6ef", "#3987e5", "#256abf", "#104281"]   # 有序单色蓝阶
-KCOL = ["#2a78d6", "#eb6834", "#1baf7a"]
 
 def save(fig, name):
     fig.savefig(f"{FIG}/{name}.png", bbox_inches="tight"); plt.close(fig)
@@ -197,166 +194,133 @@ warn_list = data[data["聚类"] == names[3]][["班级", "ID", "学分加权平�
 
 # =================== 图表 ===================
 x = np.arange(5)
-# 各班加权平均分均值 + 95%CI
+LV = ["优秀(≥85)", "良好(80–85)", "中等(70–80)", "及格(60–70)"]
+LVLAB = ["优秀", "良好", "中等", "及格"]
+
+# 各班加权平均分均值 + 95% 置信区间
 means = desc["均值"].astype(float); sd = desc["标准差"].astype(float); n = desc["样本数"].astype(int)
 ci = stats.t.ppf(.975, n - 1) * sd / np.sqrt(n)
-fig, ax = plt.subplots(figsize=(7, 3.8))
-ax.bar(x, means - 60, bottom=60, width=.56, color=[CCOL[c] for c in CLASSES], edgecolor="white", linewidth=2)
-ax.errorbar(x, means, yerr=ci, fmt="none", ecolor=INK2, elinewidth=1.2, capsize=5)
-for i, c in enumerate(CLASSES):
-    ax.text(i, means[c] + ci[c] + .4, f"{means[c]:.2f}", ha="center", va="bottom", color=INK, fontsize=10, fontweight="bold")
-ax.axhline(desc_all["均值"], color=MUTED, ls="--", lw=1)
-ax.set_xlim(-.5, 5.15)
-ax.text(4.35, desc_all["均值"], f"全体均值\n{desc_all['均值']:.2f}", ha="left", va="center", color=INK2, fontsize=9)
-ax.set_xticks(x, [f"{c}\n(n={n[c]})" for c in CLASSES]); ax.set_ylim(60, 92); ax.set_ylabel("学分加权平均分")
-ax.grid(axis="x", visible=False)
+fig, ax = plt.subplots(figsize=(6, 3.6))
+bars = ax.bar(CLASSES, means, yerr=ci, capsize=4, width=0.6, color="C0", edgecolor="black", linewidth=0.6, error_kw=dict(elinewidth=0.8))
+for i, c in enumerate(CLASSES): ax.text(i, means[c] + ci[c] + 0.4, f"{means[c]:.2f}", ha="center", va="bottom", fontsize=9)
+ax.axhline(desc_all["均值"], color="gray", ls="--", lw=0.8, label=f"全体均值 {desc_all['均值']:.2f}")
+ax.set_ylim(60, 92); ax.set_xlabel("班级"); ax.set_ylabel("学分加权平均分")
+ax.legend(loc="upper left", frameon=False)
 save(fig, "fig1_mean_bar")
 
-# 直方图小多图
+# 直方图
 bins = np.arange(60, 95.1, 2.5)
-fig, axes = plt.subplots(1, 5, figsize=(12, 3), sharey=True, sharex=True)
+fig, axes = plt.subplots(1, 5, figsize=(12, 2.9), sharey=True)
 for ax, c in zip(axes, CLASSES):
     s = g.get_group(c)["学分加权平均分"]
-    ax.hist(s, bins=bins, color=CCOL[c], edgecolor="white", linewidth=1.5)
-    ax.axvline(s.mean(), color=INK, lw=1.2); ax.axvline(s.median(), color=INK, lw=1.2, ls=":")
-    ax.set_title(f"{c}  偏度 {s.skew():+.2f}", fontsize=10.5); ax.set_xlabel("加权平均分")
-    ax.grid(axis="x", visible=False)
-axes[0].set_ylabel("人数")
+    ax.hist(s, bins=bins, color="C0", edgecolor="black", linewidth=0.5)
+    ax.axvline(s.mean(), color="C3", lw=1.0, label="均值")
+    ax.axvline(s.median(), color="black", lw=1.0, ls="--", label="中位数")
+    ax.set_title(c, fontsize=10.5); ax.set_xlabel("学分加权平均分"); ax.set_xlim(60, 95)
+axes[0].set_ylabel("人数"); axes[-1].legend(frameon=False, fontsize=8.5, loc="upper left")
 fig.tight_layout(); save(fig, "fig2_hist")
 
-# 成绩等级百分比堆叠条形图
-fig, ax = plt.subplots(figsize=(8, 3.8))
-left = np.zeros(5)
-for lv, col in zip(LEVELS, LCOL):
-    v = level_pct[lv].values
-    ax.barh(x, v, left=left, color=col, edgecolor="white", linewidth=2, height=.62, label=lv)
-    for i, (l, w) in enumerate(zip(left, v)):
-        if w >= .07:
-            ax.text(l + w / 2, i, f"{w:.0%}", ha="center", va="center", fontsize=9,
-                    color="white" if col != LCOL[0] else INK)
-    left += v
-ax.set_yticks(x, CLASSES); ax.invert_yaxis(); ax.set_xlim(0, 1)
-ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
-ax.legend(ncol=4, loc="lower center", bbox_to_anchor=(.5, 1.0), fontsize=9)
-ax.grid(axis="y", visible=False)
+# 成绩等级构成（百分比堆积条形图）
+lp = level_pct[LV[::-1]]
+lp.columns = LVLAB[::-1]
+# 等级配色沿用课堂范例：优秀绿、良好蓝、中等黄、及格红
+LVCOL = ["tab:red", "gold", "tab:blue", "tab:green"]
+ax = (lp * 100).plot(kind="barh", stacked=True, figsize=(6.5, 3.4), width=0.6, edgecolor="black", linewidth=0.5,
+                     color=LVCOL)
+fig = ax.get_figure()
+ax.invert_yaxis(); ax.set_xlim(0, 100); ax.set_xlabel("比例（%）"); ax.set_ylabel("班级")
+ax.legend(ncol=4, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False)
+for cont in ax.containers:
+    ax.bar_label(cont, labels=[f"{w:.0f}" if w >= 7 else "" for w in cont.datavalues], label_type="center", fontsize=8.5)
 save(fig, "fig3_levels")
 
-# 箱线图 + 散点 + 异常点标注
-fig, ax = plt.subplots(figsize=(8, 4.6))
-bp = ax.boxplot(groups, positions=x, widths=.5, patch_artist=True, showfliers=False,
-                medianprops=dict(color=INK, lw=1.6), whiskerprops=dict(color=INK2), capprops=dict(color=INK2),
-                boxprops=dict(linewidth=1, edgecolor=INK2))
-for patch, c in zip(bp["boxes"], CLASSES):
-    patch.set_facecolor(CCOL[c]); patch.set_alpha(.35)
-rng = np.random.default_rng(0)
+# 箱线图
+fig, ax = plt.subplots(figsize=(6.5, 3.8))
+bp = ax.boxplot(groups, tick_labels=CLASSES, widths=0.5, flierprops=dict(marker="o", markerfacecolor="none", markersize=5))
 for i, c in enumerate(CLASSES):
-    d = data[data["班级"] == c]
-    jit = rng.uniform(-.13, .13, len(d))
-    normal = ~d["箱线图异常"]
-    ax.scatter(i + jit[normal], d["学分加权平均分"][normal], s=14, color=CCOL[c], edgecolor="white", linewidth=.6, zorder=3)
-    ax.scatter(i + jit[~normal], d["学分加权平均分"][~normal], s=60, facecolor="white", edgecolor="#e34948", linewidth=2, zorder=4)
-    for (_, r), jj in zip(d[~normal].iterrows(), jit[~normal]):
-        ax.annotate(f"{r.ID} ({r.学分加权平均分:.2f})", (i + jj, r.学分加权平均分), xytext=(10, -3),
-                    textcoords="offset points", fontsize=8.5, color=INK2)
-ax.set_xticks(x, CLASSES); ax.set_ylabel("学分加权平均分"); ax.grid(axis="x", visible=False)
+    d = data[(data["班级"] == c) & data["箱线图异常"]]
+    for _, r in d.iterrows():
+        ax.annotate(r.ID, (i + 1, r.学分加权平均分), xytext=(6, -3), textcoords="offset points", fontsize=8)
+ax.set_xlabel("班级"); ax.set_ylabel("学分加权平均分")
 save(fig, "fig4_box")
 
-# 不及格情况
-fig, ax = plt.subplots(figsize=(7, 3.6))
-fr = other["不及格率"]
-ax.bar(x, fr, width=.56, color=[CCOL[c] for c in CLASSES], edgecolor="white", linewidth=2)
-for i, c in enumerate(CLASSES):
-    ax.text(i, fr[c] + .008, f"{fr[c]:.1%}\n{int(other.loc[c,'不及格人数'])}/{int(n[c])}人，{int(other.loc[c,'不及格门次合计'])}门次",
-            ha="center", va="bottom", fontsize=8.8, color=INK)
-ax.set_xticks(x, CLASSES); ax.set_ylim(0, .5); ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
-ax.set_ylabel("不及格学生占比"); ax.grid(axis="x", visible=False)
+# 各班不及格率
+fig, ax = plt.subplots(figsize=(6, 3.4))
+fr = other["不及格率"] * 100
+bars = ax.bar(CLASSES, fr, width=0.6, color="C0", edgecolor="black", linewidth=0.6)
+ax.bar_label(bars, labels=[f"{v:.1f}%" for v in fr], padding=2, fontsize=9)
+ax.set_ylim(0, 45); ax.set_xlabel("班级"); ax.set_ylabel("不及格率（%）")
 save(fig, "fig5_fail")
 
-# 相关系数热力图
-from matplotlib.colors import LinearSegmentedColormap
-div = LinearSegmentedColormap.from_list("div", ["#e34948", "#f0efec", "#2a78d6"])
-fig, ax = plt.subplots(figsize=(6.6, 5.4))
-im = ax.imshow(corr.values, cmap=div, vmin=-1, vmax=1)
-ax.set_xticks(range(len(num_cols)), num_cols, rotation=40, ha="right"); ax.set_yticks(range(len(num_cols)), num_cols)
+# 相关系数矩阵
+fig, ax = plt.subplots(figsize=(6.2, 5.0))
+im = ax.imshow(corr.values, cmap="RdBu_r", vmin=-1, vmax=1)
+ax.set_xticks(range(len(num_cols))); ax.set_xticklabels(num_cols, rotation=45, ha="right")
+ax.set_yticks(range(len(num_cols))); ax.set_yticklabels(num_cols)
+ax.tick_params(direction="out")
 for i in range(len(num_cols)):
     for j in range(len(num_cols)):
-        v = corr.values[i, j]; ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=8,
-                                       color="white" if abs(v) > .75 else INK)
-ax.grid(False); ax.spines[:].set_visible(False)
-fig.colorbar(im, ax=ax, shrink=.75, label="Pearson 相关系数")
+        v = corr.values[i, j]
+        ax.text(j, i, f"{v:.2f}", ha="center", va="center", fontsize=8, color="white" if abs(v) > 0.6 else "black")
+fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
 save(fig, "fig6_corr")
 
-# QQ 图：同专业两班对比
-def qq(ax, a, b, ca, cb):
+# Q-Q 图
+def qq(ax, a, b):
     qs = np.linspace(.02, .98, 25)
-    qa, qb = np.quantile(g.get_group(a)["学分加权平均分"], qs), np.quantile(g.get_group(b)["学分加权平均分"], qs)
-    lo, hi = 60, 93
-    ax.plot([lo, hi], [lo, hi], color=MUTED, ls="--", lw=1)
-    ax.scatter(qa, qb, s=26, color=CCOL[b], edgecolor="white", linewidth=.8, zorder=3)
-    mid = np.quantile(g.get_group(a)["学分加权平均分"], .5), np.quantile(g.get_group(b)["学分加权平均分"], .5)
-    ax.scatter(*mid, s=70, facecolor="none", edgecolor=INK, lw=1.4, zorder=4)
-    ax.annotate("中位数", mid, xytext=(8, -14), textcoords="offset points", fontsize=8.5, color=INK2)
-    ax.text(lo + 1, hi - 1.5, "y = x", color=MUTED, fontsize=8.5)
-    ax.set_xlim(lo, hi); ax.set_ylim(lo, hi); ax.set_aspect("equal")
-    ax.set_xlabel(f"{a} 班分位数"); ax.set_ylabel(f"{b} 班分位数")
-fig, axes = plt.subplots(1, 3, figsize=(12, 4.2))
-for ax, (a, b) in zip(axes, [("D1", "D2"), ("T1", "T2"), ("T1", "BD")]):
-    qq(ax, a, b, CCOL[a], CCOL[b]); ax.set_title(f"{a} vs {b}", fontsize=11)
+    qa = np.quantile(g.get_group(a)["学分加权平均分"], qs); qb = np.quantile(g.get_group(b)["学分加权平均分"], qs)
+    ax.plot([60, 93], [60, 93], "k--", lw=0.8)
+    ax.plot(qa, qb, "o", color="C0", markersize=4, markerfacecolor="none")
+    ax.set_xlim(60, 93); ax.set_ylim(60, 93); ax.set_aspect("equal")
+    ax.set_xlabel(f"{a}班分位数"); ax.set_ylabel(f"{b}班分位数"); ax.set_title(f"({'abc'[PAIRS.index((a, b))]}) {a}与{b}", fontsize=10.5)
+PAIRS = [("D1", "D2"), ("T1", "T2"), ("T1", "BD")]
+fig, axes = plt.subplots(1, 3, figsize=(11, 3.8))
+for ax, (a, b) in zip(axes, PAIRS): qq(ax, a, b)
 fig.tight_layout(); save(fig, "fig7_qq")
 
-# 平行坐标图：各班均值画像（Min-Max 归一化）
+# 平行坐标图（pandas.plotting.parallel_coordinates）
+from pandas.plotting import parallel_coordinates
 pc_cols = ["学分加权平均分", "平均学分绩点", "课程平均分", "通过率", "不及格门次", "不及格学分"]
 pm = data.groupby("班级")[pc_cols].mean().loc[CLASSES]
-pmn = (pm - pm.min()) / (pm.max() - pm.min())
-fig, ax = plt.subplots(figsize=(9, 4.2))
-for c in CLASSES:
-    ax.plot(range(len(pc_cols)), pmn.loc[c], color=CCOL[c], lw=2, marker="o", ms=8, mec="white", mew=1.5)
-    ax.text(len(pc_cols) - 1 + .12, pmn.loc[c].iloc[-1], c, color=INK, va="center", fontsize=9.5, fontweight="bold")
-# 末端标签避让
-ax.set_xticks(range(len(pc_cols)), pc_cols); ax.set_xlim(-.2, len(pc_cols) - .5)
-ax.set_ylabel("Min-Max 归一化值（0=五班最低，1=五班最高）"); ax.grid(axis="y", visible=False)
-for i in range(len(pc_cols)): ax.axvline(i, color="#d8d7d2", lw=1, zorder=0)
-ax.legend([plt.Line2D([], [], color=CCOL[c], lw=2, marker="o") for c in CLASSES], CLASSES, ncol=5, loc="lower center", bbox_to_anchor=(.5, 1.0))
+pmn = ((pm - pm.min()) / (pm.max() - pm.min())).reset_index()
+fig, ax = plt.subplots(figsize=(8, 3.8))
+parallel_coordinates(pmn, "班级", ax=ax, color=[CCOL[c] for c in CLASSES], marker="o", markersize=4, linewidth=1.2)
+ax.set_ylabel("归一化值"); ax.legend(ncol=5, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False)
 save(fig, "fig8_parallel")
 
 # K 值选择
-fig, ax1 = plt.subplots(1, 2, figsize=(9, 3.2))
-ax1[0].plot(kscan.k, kscan.SSE, color=KCOL[0], lw=2, marker="o", ms=8, mec="white"); ax1[0].set_title("肘部法：簇内误差平方和 SSE", fontsize=10.5); ax1[0].set_xlabel("k")
-ax1[1].plot(kscan.k, kscan["轮廓系数"], color=KCOL[0], lw=2, marker="o", ms=8, mec="white"); ax1[1].set_title("轮廓系数（越大越好）", fontsize=10.5); ax1[1].set_xlabel("k")
-for a in ax1: a.axvline(K, color=MUTED, ls="--", lw=1); a.set_xticks(range(2, 7))
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(9, 3.2))
+a1.plot(kscan.k, kscan.SSE, "o-", color="C0", markersize=5); a1.set_xlabel("聚类数 k"); a1.set_ylabel("SSE"); a1.set_title("(a) 肘部法", fontsize=10.5)
+a2.plot(kscan.k, kscan["轮廓系数"], "o-", color="C0", markersize=5); a2.set_xlabel("聚类数 k"); a2.set_ylabel("轮廓系数"); a2.set_title("(b) 轮廓系数", fontsize=10.5)
+for a in (a1, a2): a.set_xticks(range(2, 7))
 fig.tight_layout(); save(fig, "fig9_kscan")
 
-# PCA 二维聚类散点
-fig, ax = plt.subplots(figsize=(8, 4.8))
+# PCA 二维投影
+fig, ax = plt.subplots(figsize=(6.5, 4.0))
 for j, nm in enumerate(sorted(names.values())):
     idx = (data["聚类"] == nm).values
-    ax.scatter(pcs[idx, 0], pcs[idx, 1], s=40, color=KCOL[j], edgecolor="white", linewidth=1, label=f"{nm}（{idx.sum()}人）", zorder=3)
-ax.legend(loc="lower left")
-ax.set_xlabel(f"PC1：综合学业水平（解释方差 {expl[0]:.1%}）"); ax.set_ylabel(f"PC2（解释方差 {expl[1]:.1%}）")
+    ax.scatter(pcs[idx, 0], pcs[idx, 1], s=18, color=f"C{j}", alpha=0.8, label=f"{nm}（n={idx.sum()}）")
+ax.set_xlabel(f"PC1（{expl[0]:.1%}）"); ax.set_ylabel(f"PC2（{expl[1]:.1%}）")
+ax.legend(loc="lower left", frameon=True, fancybox=False, edgecolor="black")
 save(fig, "fig10_cluster")
 
-# 聚类×班级构成
-fig, ax = plt.subplots(figsize=(8, 3.6))
-cp = cl_cross.div(cl_cross.sum(1), axis=0); left = np.zeros(5)
-for j, nm in enumerate(sorted(names.values())):
-    v = cp[nm].values
-    ax.barh(x, v, left=left, color=KCOL[j], edgecolor="white", linewidth=2, height=.62, label=nm)
-    for i, (l, w) in enumerate(zip(left, v)):
-        if w >= .06: ax.text(l + w / 2, i, f"{int(cl_cross.loc[CLASSES[i], nm])}人", ha="center", va="center", fontsize=9, color="white" if j != 2 else INK)
-    left += v
-ax.set_yticks(x, CLASSES); ax.invert_yaxis(); ax.set_xlim(0, 1)
-ax.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0)); ax.grid(axis="y", visible=False)
-ax.legend(ncol=3, loc="lower center", bbox_to_anchor=(.5, 1.0), fontsize=9)
+# 各班聚类构成（pandas 堆积条形图）
+ax = cl_cross[sorted(names.values())].plot(kind="barh", stacked=True, figsize=(6.5, 3.4), width=0.6, edgecolor="black", linewidth=0.5)
+fig = ax.get_figure()
+ax.invert_yaxis(); ax.set_xlabel("人数"); ax.set_ylabel("班级")
+ax.legend(ncol=3, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False)
+for cont in ax.containers:
+    ax.bar_label(cont, labels=[f"{int(w)}" if w >= 2 else "" for w in cont.datavalues], label_type="center", fontsize=8.5)
 save(fig, "fig11_cluster_by_class")
 
-# 不及格门次 vs 加权平均分（按聚类着色）
-fig, ax = plt.subplots(figsize=(7.5, 4.2))
-jit = rng.uniform(-.12, .12, len(data))
+# 不及格门次与加权平均分散点图
+fig, ax = plt.subplots(figsize=(6, 3.8))
+jit = np.random.default_rng(0).uniform(-0.1, 0.1, len(data))
 for j, nm in enumerate(sorted(names.values())):
     idx = (data["聚类"] == nm).values
-    ax.scatter(data["不及格门次"][idx] + jit[idx], data["学分加权平均分"][idx], s=36, color=KCOL[j], edgecolor="white", linewidth=1, label=nm, zorder=3)
-r = data["不及格门次"].corr(data["学分加权平均分"])
-ax.set_xticks(range(5)); ax.set_xlabel("不及格门次"); ax.set_ylabel("学分加权平均分"); ax.legend(loc="upper right")
+    ax.scatter(data["不及格门次"][idx] + jit[idx], data["学分加权平均分"][idx], s=16, color=f"C{j}", alpha=0.8, label=nm)
+ax.set_xticks(range(5)); ax.set_xlabel("不及格门次"); ax.set_ylabel("学分加权平均分")
+ax.legend(loc="upper right", frameon=True, fancybox=False, edgecolor="black")
 save(fig, "fig12_scatter")
 
 # =================== 导出 ===================
