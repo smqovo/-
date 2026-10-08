@@ -45,7 +45,7 @@ frames = []
 for cls, df in raw.items():
     first_col = df.columns[0]
     text_cells = TEXT_CELLS[cls]   # 以文本格式存储的数值单元格（Excel 中带绿色小三角）
-    pr_fmt = "百分号文本(如 82.14%)" if df["通过率"].str.contains("%").any() else "小数文本(如 0.8)"
+    pr_fmt = "百分号文本(如 82.14%)" if df["通过率"].str.contains("%").any() else "数值型小数(单元格显示为百分比)"
     df = df.rename(columns={first_col: "ID"})
     d = df.copy()
     d["通过率"] = d["通过率"].str.rstrip("%").astype(float)
@@ -72,7 +72,7 @@ audit = pd.DataFrame(audit)
 # ---------- 2. 数据集成与变换 ----------
 data = pd.concat(frames, ignore_index=True)                   # 集成：5 表纵向合并
 data["课程平均分"] = data["总分"] / data["门数"]                # 消除门数不同带来的量纲差异
-data["是否挂科"] = (data["不及格门次"] > 0).astype(int)
+data["是否不及格"] = (data["不及格门次"] > 0).astype(int)
 data["成绩等级"] = pd.cut(data["学分加权平均分"], [60, 70, 80, 85, 100.01],
                        labels=LEVELS, right=False)
 for c in ["学分加权平均分", "总分", "课程平均分"]:
@@ -96,8 +96,8 @@ desc_all = describe(data["学分加权平均分"])
 other = pd.DataFrame({
     "平均学分绩点(均值)": g["平均学分绩点"].mean(),
     "课程平均分(均值)": g["课程平均分"].mean(),
-    "挂科人数": g["是否挂科"].sum(),
-    "挂科率": g["是否挂科"].mean(),
+    "不及格人数": g["是否不及格"].sum(),
+    "不及格率": g["是否不及格"].mean(),
     "不及格门次合计": g["不及格门次"].sum(),
     "人均不及格学分": g["不及格学分"].mean(),
     "通过率(均值)": g["通过率"].mean(),
@@ -155,11 +155,17 @@ pcs = Xz @ evecs[:, :2]
 expl = evals / evals.sum()
 loadings = pd.DataFrame(evecs[:, :2], index=feat, columns=["PC1", "PC2"])
 
-def kmeans(Z, k, seeds=50):
+def kmeans(Z, k, seeds=500):
     best = None
     for sd in range(seeds):
         rng = np.random.default_rng(sd)
-        C = Z[rng.choice(len(Z), k, replace=False)]
+        if sd % 2:   # 奇数次重启使用 k-means++ 初始化
+            C = Z[[rng.integers(len(Z))]]
+            while len(C) < k:
+                d2 = ((Z[:, None] - C) ** 2).sum(-1).min(1)
+                C = np.vstack([C, Z[rng.choice(len(Z), p=d2 / d2.sum())]])
+        else:
+            C = Z[rng.choice(len(Z), k, replace=False)]
         for _ in range(300):
             lab = ((Z[:, None] - C) ** 2).sum(-1).argmin(1)
             newC = np.array([Z[lab == j].mean(0) if (lab == j).any() else C[j] for j in range(k)])
@@ -182,7 +188,7 @@ K = 3
 _, lab, _ = kmeans(Xz, K)
 # 按加权平均分高低给簇命名
 rank = pd.Series(lab).map(data.groupby(lab)["学分加权平均分"].mean().rank(ascending=False).astype(int))
-names = {1: "A 学业优良组", 2: "B 稳定中等组", 3: "C 学业预警组"}
+names = {1: "A 学业优良组", 2: "B 中等组", 3: "C 学业预警组"}
 data["聚类"] = rank.map(names).values
 cl_profile = data.groupby("聚类")[["学分加权平均分", "平均学分绩点", "不及格门次", "不及格学分", "通过率"]].mean()
 cl_profile.insert(0, "人数", data.groupby("聚类").size())
@@ -255,15 +261,15 @@ for i, c in enumerate(CLASSES):
 ax.set_xticks(x, CLASSES); ax.set_ylabel("学分加权平均分"); ax.grid(axis="x", visible=False)
 save(fig, "fig4_box")
 
-# 挂科情况
+# 不及格情况
 fig, ax = plt.subplots(figsize=(7, 3.6))
-fr = other["挂科率"]
+fr = other["不及格率"]
 ax.bar(x, fr, width=.56, color=[CCOL[c] for c in CLASSES], edgecolor="white", linewidth=2)
 for i, c in enumerate(CLASSES):
-    ax.text(i, fr[c] + .008, f"{fr[c]:.1%}\n{int(other.loc[c,'挂科人数'])}/{int(n[c])}人，{int(other.loc[c,'不及格门次合计'])}门次",
+    ax.text(i, fr[c] + .008, f"{fr[c]:.1%}\n{int(other.loc[c,'不及格人数'])}/{int(n[c])}人，{int(other.loc[c,'不及格门次合计'])}门次",
             ha="center", va="bottom", fontsize=8.8, color=INK)
 ax.set_xticks(x, CLASSES); ax.set_ylim(0, .5); ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0))
-ax.set_ylabel("有挂科学生占比"); ax.grid(axis="x", visible=False)
+ax.set_ylabel("不及格学生占比"); ax.grid(axis="x", visible=False)
 save(fig, "fig5_fail")
 
 # 相关系数热力图
